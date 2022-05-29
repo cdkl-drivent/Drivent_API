@@ -18,6 +18,7 @@ model User {
   updatedAt  DateTime     @updatedAt
   Session    Session[]
   Enrollment Enrollment[]
+  Order      Order[]
 }
 
 model Session {
@@ -66,4 +67,20 @@ model Address {
   Enrollment    Enrollment @relation(fields: [enrollmentId], references: [id])
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+}
+
+model Ticket {
+  type          String     @db.VarChar(255) @id @unique
+  price         Int
+  Order         Order[]
+
+}
+
+model Order {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  User          User      @relation(fields: [userId], references: [id])
+  ticketType    String    @db.VarChar(255)
+  Ticket        Ticket    @relation(fields: [ticketType], references: [type])
+  Payment       Boolean   @default(false)
 }
