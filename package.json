@@ -11,6 +11,7 @@
     "migration:run": "prisma migrate deploy",
     "migration:generate": "npm run dev:load-envs prisma migrate dev",
     "prisma:studio": "npm run dev:load-envs prisma studio",
+    "prisma:seed": "npm run dev:load-envs prisma db seed",
     "lint:staged": "lint-staged",
     "test": "jest --passWithNoTests --runInBand",
     "test:migration:run": "npm run test:load-envs prisma migrate deploy",
