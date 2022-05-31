@@ -8,7 +8,7 @@
     "build": "ttsc -p tsconfig.build.json",
     "prepare": "husky install",
     "start": "node dist/server.js",
-    "migration:run": "prisma migrate deploy",
+    "migration:run": "npm run dev:load-envs prisma migrate deploy",
     "migration:generate": "npm run dev:load-envs prisma migrate dev",
     "prisma:studio": "npm run dev:load-envs prisma studio",
     "prisma:seed": "npm run dev:load-envs prisma db seed",
