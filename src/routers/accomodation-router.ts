@@ -4,6 +4,6 @@ import { authenticateToken } from '@/middlewares';
 
 const accomodationRouter = Router();
 
-accomodationRouter.all('/*', authenticateToken).get('/', getAccommodationTypes);
+accomodationRouter.all('/*', authenticateToken).get('/', getAccomodationTypes);
 
 export { accomodationRouter };
