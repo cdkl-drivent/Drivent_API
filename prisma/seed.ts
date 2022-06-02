@@ -4,6 +4,22 @@ import dayjs from 'dayjs';
 const prisma = new PrismaClient();
 
 async function main() {
+  let event = await createEvent();
+  console.log({ event });
+
+  await createTickets();
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+async function createTickets() {
   const tickets: Ticket[] = [
     {
       type: 'Presencial',
@@ -18,7 +34,9 @@ async function main() {
   await prisma.ticket.createMany({
     data: tickets,
   });
+}
 
+async function createEvent() {
   let event = await prisma.event.findFirst();
   if (!event) {
     event = await prisma.event.create({
@@ -31,15 +49,6 @@ async function main() {
       },
     });
   }
-
-  console.log({ event });
+  return event;
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
