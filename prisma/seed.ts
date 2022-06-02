@@ -1,4 +1,4 @@
-import { PrismaClient, Ticket } from '@prisma/client';
+import { PrismaClient, Ticket, Accomodation } from '@prisma/client';
 import dayjs from 'dayjs';
 
 const prisma = new PrismaClient();
@@ -15,8 +15,23 @@ async function main() {
     },
   ];
 
+  const accomodations: Accomodation[] = [
+    {
+      type: 'Sem Hotel',
+      price: 0,
+    },
+    {
+      type: 'Com Hotel',
+      price: 35000,
+    },
+  ];
+
   await prisma.ticket.createMany({
     data: tickets,
+  });
+
+  await prisma.accomodation.createMany({
+    data: accomodations,
   });
 
   let event = await prisma.event.findFirst();
