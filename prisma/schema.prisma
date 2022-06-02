@@ -70,17 +70,24 @@ model Address {
 }
 
 model Ticket {
-  type          String     @db.VarChar(255) @id @unique
-  price         Int
-  Order         Order[]
+  type  String  @id @unique @db.VarChar(255)
+  price Int
+  Order Order[]
+}
 
+model Accomodation {
+  type  String  @id @unique @db.VarChar(255)
+  price Int
+  Order Order[]
 }
 
 model Order {
-  id            Int       @id @default(autoincrement())
-  userId        Int       @unique
-  User          User      @relation(fields: [userId], references: [id])
-  ticketType    String    @db.VarChar(255)
-  Ticket        Ticket    @relation(fields: [ticketType], references: [type])
-  Payment       Boolean   @default(false)
+  id               Int          @id @default(autoincrement())
+  userId           Int          @unique
+  User             User         @relation(fields: [userId], references: [id])
+  ticketType       String       @db.VarChar(255)
+  Ticket           Ticket       @relation(fields: [ticketType], references: [type])
+  Payment          Boolean      @default(false)
+  Accomodation     Accomodation @relation(fields: [accomodationType], references: [type])
+  accomodationType String
 }

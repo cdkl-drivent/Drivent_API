@@ -1,13 +1,17 @@
-import { PrismaClient, Ticket } from '@prisma/client';
+import { PrismaClient, Ticket, Accomodation } from '@prisma/client';
 import dayjs from 'dayjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  let event = await createEvent();
+  const event = await createEvent();
   console.log({ event });
 
-  await createTickets();
+  const tickets = await createTickets();
+  console.log({ tickets });
+
+  const accomodations = await createAccomodations()
+  console.log({ accomodations });
 }
 
 main()
@@ -18,6 +22,23 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+async function createAccomodations() {
+  const accomodations: Accomodation[] = [
+    {
+      type: 'Sem Hotel',
+      price: 0,
+    },
+    {
+      type: 'Com Hotel',
+      price: 35000,
+    },
+  ];
+
+  return await prisma.accomodation.createMany({
+    data: accomodations,
+  });
+}
 
 async function createTickets() {
   const tickets: Ticket[] = [
@@ -31,7 +52,7 @@ async function createTickets() {
     },
   ];
 
-  await prisma.ticket.createMany({
+  return await prisma.ticket.createMany({
     data: tickets,
   });
 }
