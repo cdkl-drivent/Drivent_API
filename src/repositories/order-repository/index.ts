@@ -1,7 +1,7 @@
 import { prisma } from '@/config';
 import { Order } from '@prisma/client';
 
-export type orderParams = Omit<Order, 'id' | 'payment'>;
+export type orderParams = Omit<Order, 'id' | 'Payment'>;
 
 async function updatePayment(userId: number) {
   return prisma.order.update({

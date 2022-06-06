@@ -2,10 +2,12 @@ import { AuthenticatedRequest } from '@/middlewares';
 import ordersService from '@/services/orders-service';
 import { Response } from 'express';
 import httpStatus from 'http-status';
-import { orderParams } from '@/repositories/order-repository';
+import { Order } from '@prisma/client';
+
+type NewOrder = Omit<Order, 'id' | 'Payment' | 'userId'>;
 
 export async function createOrUpdate(req: AuthenticatedRequest, res: Response) {
-  const newOrder: orderParams = req.body;
+  const newOrder: NewOrder = req.body;
 
   const createdOrder = await ordersService.createOrUpdate({ ...newOrder, userId: req.userId });
 
