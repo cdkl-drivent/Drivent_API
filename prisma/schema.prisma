@@ -88,6 +88,7 @@ model Order {
   ticketType       String       @db.VarChar(255)
   Ticket           Ticket       @relation(fields: [ticketType], references: [type])
   Payment          Boolean      @default(false)
+  price            Int          
   Accomodation     Accomodation @relation(fields: [accomodationType], references: [type])
   accomodationType String
 }
