@@ -9,7 +9,7 @@
     "prepare": "husky install",
     "start": "node dist/server.js",
     "migration:run": "npm run dev:load-envs prisma migrate deploy",
-    "migration:generate": "npm run dev:load-envs prisma migrate dev",
+    "migration:generate": "npm run dev:load-envs prisma migrate dev ",
     "prisma:studio": "npm run dev:load-envs prisma studio",
     "prisma:seed": "npm run dev:load-envs prisma db seed",
     "lint:staged": "lint-staged",
@@ -97,6 +97,7 @@
     "http-status": "^1.5.2",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "stripe": "^9.6.0"
   }
 }

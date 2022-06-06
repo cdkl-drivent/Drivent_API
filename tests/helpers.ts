@@ -6,6 +6,8 @@ import { createSession } from './factories/sessions-factory';
 import { prisma } from '@/config';
 
 export async function cleanDb() {
+  await prisma.order.deleteMany({});
+  await prisma.accomodation.deleteMany({});
   await prisma.ticket.deleteMany({});
   await prisma.address.deleteMany({});
   await prisma.enrollment.deleteMany({});
@@ -18,7 +20,7 @@ export async function generateValidToken(user?: User) {
   const incomingUser = user || (await createUser());
   const token = jwt.sign({ userId: incomingUser.id }, process.env.JWT_SECRET);
 
-  await createSession(token);
-
+  const session = await createSession(token, user);
+  console.log(session);
   return token;
 }
