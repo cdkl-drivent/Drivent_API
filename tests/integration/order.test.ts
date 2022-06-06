@@ -61,22 +61,12 @@ describe('GET /orders', () => {
       };
       const order = await createOrder(orderBody);
       const token = await generateValidToken(user);
+      console.log(token);
 
       const response = await server.get('/order').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual([
-        {
-          id: order.id,
-          userId: order.userId,
-          ticketType: order.ticketType,
-          Payment: false,
-          price: order.price,
-          accomodationType: order.accomodationType,
-          Ticket,
-          Accomodation,
-        },
-      ]);
+      expect(response.body).toEqual({ ...order, Ticket, Accomodation });
     });
   });
 });
