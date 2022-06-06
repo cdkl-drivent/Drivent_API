@@ -10,9 +10,11 @@ async function updatePayment(userId: number) {
   });
 }
 
-async function create(order: orderParams) {
-  return prisma.order.create({
-    data: order,
+async function createOrUpdate(order: orderParams) {
+  return prisma.order.upsert({
+    where: { userId: order.userId },
+    create: order,
+    update: order,
   });
 }
 
@@ -26,7 +28,7 @@ async function getByUserId(userId: number) {
 const orderRepository = {
   updatePayment,
   getByUserId,
-  create,
+  createOrUpdate,
 };
 
 export default orderRepository;

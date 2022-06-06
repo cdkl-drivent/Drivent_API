@@ -7,7 +7,7 @@ const ordersRouter = Router();
 
 ordersRouter
   .all('/*', authenticateToken)
-  .post('/', validateBody(createOrderSchema), orderController.create)
+  .post('/', validateBody(createOrderSchema), orderController.createOrUpdate)
   .get('/', orderController.getByUserId)
   .put('/', orderController.updatePayment);
 

@@ -19,14 +19,14 @@ async function getByUserId(userId: number) {
   return order;
 }
 
-async function create(newOrder: orderParams) {
-  const createdOrder = await orderRepository.create(newOrder);
+async function createOrUpdate(newOrder: orderParams) {
+  const createdOrder = await orderRepository.createOrUpdate(newOrder);
 
   return createdOrder;
 }
 const ordersService = {
   getByUserId,
-  create,
+  createOrUpdate,
   updatePayment,
 };
 

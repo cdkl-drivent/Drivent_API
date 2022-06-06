@@ -4,10 +4,10 @@ import { Response } from 'express';
 import httpStatus from 'http-status';
 import { orderParams } from '@/repositories/order-repository';
 
-export async function create(req: AuthenticatedRequest, res: Response) {
+export async function createOrUpdate(req: AuthenticatedRequest, res: Response) {
   const newOrder: orderParams = req.body;
 
-  const createdOrder = await ordersService.create({ ...newOrder, userId: req.userId });
+  const createdOrder = await ordersService.createOrUpdate({ ...newOrder, userId: req.userId });
 
   return res.status(httpStatus.OK).send(createdOrder);
 }
