@@ -1,11 +1,12 @@
 import { Accomodation } from '@prisma/client';
 import { prisma } from '@/config';
+import faker from '@faker-js/faker';
 
 export function createAccomodation(): Promise<Accomodation> {
   return prisma.accomodation.create({
     data: {
-      type: 'Com Hotel',
-      price: 35000,
+      type: faker.random.word(),
+      price: faker.datatype.number(),
     },
   });
 }

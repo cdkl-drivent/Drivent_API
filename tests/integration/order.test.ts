@@ -49,24 +49,51 @@ describe('GET /orders', () => {
     });
 
     it('should respond with status 200 and order data if there is a order', async () => {
-      const Ticket = await createTicket();
-      const Accomodation = await createAccomodation();
-      const price = Ticket.price + Accomodation.price;
       const user = await createUser({ password: faker.internet.password(6) });
-      const orderBody = {
-        userId: user.id,
-        ticketType: Ticket.type,
-        accomodationType: Accomodation.type,
-        price,
-      };
+      const orderBody = await generateOrderBody(user.id);
       const order = await createOrder(orderBody);
       const token = await generateValidToken(user);
-      console.log(token);
 
-      const response = await server.get('/order').set('Authorization', `Bearer ${token}`);
+      const response = await server.get('/orders').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual({ ...order, Ticket, Accomodation });
+      expect(response.body).toEqual(order);
     });
   });
 });
+
+describe('PUT /orders', () => {
+  it('should respond with status 404 if there is no order', async () => {
+    const token = await generateValidToken();
+    const response = await server.put('/orders').set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
+  });
+
+  it('should respond with status 200 if the order has been updated', async () => {
+    const user = await createUser({ password: faker.internet.password(6) });
+    const orderBody = await generateOrderBody(user.id);
+    const token = await generateValidToken(user);
+
+    await createOrder(orderBody);
+
+    const response = await server.put('/orders').set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.OK);
+  });
+});
+
+describe('POST /orders', () => {});
+
+async function generateOrderBody(userId: number) {
+  const ticket = await createTicket();
+  const accomodation = await createAccomodation();
+  const price = ticket.price + accomodation.price;
+
+  return {
+    userId,
+    ticketType: ticket.type,
+    accomodationType: accomodation.type,
+    price,
+  };
+}
