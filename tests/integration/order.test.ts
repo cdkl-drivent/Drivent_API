@@ -3,7 +3,7 @@ import faker from '@faker-js/faker';
 import httpStatus from 'http-status';
 import supertest from 'supertest';
 import * as jwt from 'jsonwebtoken';
-import { createOrder } from '../factories/orders-factory';
+import { createOrder, generateNotValidOrderBody, generateOrderBody } from '../factories/orders-factory';
 import { cleanDb, generateValidToken } from '../helpers';
 import { createTicket } from '../factories/tickets-factory';
 import { createAccomodation } from '../factories/accomodations-factory';
@@ -83,17 +83,25 @@ describe('PUT /orders', () => {
   });
 });
 
-describe('POST /orders', () => {});
+describe('POST /orders', () => {
+  it('should respond with status 400 if order body is not valid', async () => {
+    const user = await createUser({ password: faker.internet.password(6) });
+    const body = await generateNotValidOrderBody();
+    const token = await generateValidToken(user);
 
-async function generateOrderBody(userId: number) {
-  const ticket = await createTicket();
-  const accomodation = await createAccomodation();
-  const price = ticket.price + accomodation.price;
+    const response = await server.post('/orders').send(body).set('Authorization', `Bearer ${token}`);
 
-  return {
-    userId,
-    ticketType: ticket.type,
-    accomodationType: accomodation.type,
-    price,
-  };
-}
+    expect(response.status).toBe(httpStatus.BAD_REQUEST);
+  });
+
+  it('should respond with status 200 if the order has been created', async () => {
+    const user = await createUser({ password: faker.internet.password(6) });
+    const body = await generateOrderBody(user.id);
+    delete body.userId;
+    const token = await generateValidToken(user);
+
+    const response = await server.post('/orders').send(body).set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.OK);
+  });
+});
