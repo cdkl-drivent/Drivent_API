@@ -21,6 +21,5 @@ export async function generateValidToken(user?: User) {
   const token = jwt.sign({ userId: incomingUser.id }, process.env.JWT_SECRET);
 
   const session = await createSession(token, user);
-  console.log(session);
   return token;
 }

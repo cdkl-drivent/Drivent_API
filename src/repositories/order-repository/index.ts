@@ -21,7 +21,6 @@ async function createOrUpdate(order: orderParams) {
 async function getByUserId(userId: number) {
   return prisma.order.findUnique({
     where: { userId },
-    include: { Ticket: true, Accomodation: true },
   });
 }
 

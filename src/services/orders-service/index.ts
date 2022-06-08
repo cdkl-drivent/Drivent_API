@@ -6,16 +6,17 @@ type userId = {
 };
 
 async function updatePayment({ userId }: userId) {
+  const order = await orderRepository.getByUserId(userId);
+
+  if (!order) throw notFoundError();
+
   await orderRepository.updatePayment(userId);
 
   return;
 }
 
 async function getByUserId(userId: number) {
-  console.log(userId);
   const order = await orderRepository.getByUserId(userId);
-
-  console.log(order);
 
   if (!order) throw notFoundError();
 
