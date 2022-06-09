@@ -1,16 +1,33 @@
 import { PrismaClient, Ticket, Accomodation } from '@prisma/client';
+import { createClient } from 'redis';
 import dayjs from 'dayjs';
 
 const prisma = new PrismaClient();
+const redis = createClient();
+
+async function cleanDb() {
+  await prisma.order.deleteMany({});
+  await prisma.accomodation.deleteMany({});
+  await prisma.ticket.deleteMany({});
+  await prisma.address.deleteMany({});
+  await prisma.enrollment.deleteMany({});
+  await prisma.session.deleteMany({});
+  await prisma.user.deleteMany({});
+  await redis.flushDb();
+}
 
 async function main() {
+  await redis.connect();
+  await redis.select(JSON.parse(process.env.REDIS_DATABASE));
+  // await cleanDb();
+
   const event = await createEvent();
   console.log({ event });
 
   const tickets = await createTickets();
   console.log({ tickets });
 
-  const accomodations = await createAccomodations()
+  const accomodations = await createAccomodations();
   console.log({ accomodations });
 }
 
@@ -21,6 +38,7 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await redis.disconnect();
   });
 
 async function createAccomodations() {
@@ -58,18 +76,17 @@ async function createTickets() {
 }
 
 async function createEvent() {
-  let event = await prisma.event.findFirst();
-  if (!event) {
-    event = await prisma.event.create({
-      data: {
-        title: 'Driven.t',
-        logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
-        backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
-        startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, 'days').toDate(),
-      },
-    });
-  }
+  await redis.hSet('event', {
+    title: 'Driven.t',
+    logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
+    backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
+    startsAt: JSON.stringify(dayjs()),
+    endsAt: JSON.stringify(dayjs().add(21, 'days').toDate()),
+    createdAt: JSON.stringify(dayjs().toDate()),
+    updatedAt: JSON.stringify(dayjs().toDate()),
+  });
+
+  const event = await redis.hGetAll('event');
+
   return event;
 }
-
