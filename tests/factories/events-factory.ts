@@ -10,7 +10,17 @@ export type EventParams = {
   endsAt?: string;
 };
 
-export function createEvent(params?: Partial<EventParams>) {
+export function createEvent(params?: any) {
+  // return redis.set(
+  //   'event',
+  //   JSON.stringify({
+  //     title: params.title || JSON.stringify(faker.lorem.sentence()),
+  //     backgroundImageUrl: params.backgroundImageUrl || JSON.stringify(faker.image.imageUrl()),
+  //     logoImageUrl: params.logoImageUrl || JSON.stringify(faker.image.imageUrl()),
+  //     startsAt: params.startsAt || JSON.stringify(dayjs().subtract(1, 'day').toDate()),
+  //     endsAt: params.endsAt || JSON.stringify(dayjs().add(5, 'days').toDate()),
+  //   }),
+  // );
   return redis.hSet('event', {
     title: params.title || JSON.stringify(faker.lorem.sentence()),
     backgroundImageUrl: params.backgroundImageUrl || JSON.stringify(faker.image.imageUrl()),

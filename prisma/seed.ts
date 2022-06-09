@@ -5,21 +5,9 @@ import dayjs from 'dayjs';
 const prisma = new PrismaClient();
 const redis = createClient();
 
-async function cleanDb() {
-  await prisma.order.deleteMany({});
-  await prisma.accomodation.deleteMany({});
-  await prisma.ticket.deleteMany({});
-  await prisma.address.deleteMany({});
-  await prisma.enrollment.deleteMany({});
-  await prisma.session.deleteMany({});
-  await prisma.user.deleteMany({});
-  await redis.flushDb();
-}
-
 async function main() {
   await redis.connect();
   await redis.select(JSON.parse(process.env.REDIS_DATABASE));
-  // await cleanDb();
 
   const event = await createEvent();
   console.log({ event });
@@ -53,9 +41,15 @@ async function createAccomodations() {
     },
   ];
 
-  return await prisma.accomodation.createMany({
-    data: accomodations,
-  });
+  for (let i = 0; i < accomodations.length; i++) {
+    await prisma.accomodation.upsert({
+      where: { type: accomodations[i].type },
+      create: accomodations[i],
+      update: accomodations[i],
+    });
+  }
+
+  return await prisma.accomodation.findMany({});
 }
 
 async function createTickets() {
@@ -70,9 +64,15 @@ async function createTickets() {
     },
   ];
 
-  return await prisma.ticket.createMany({
-    data: tickets,
-  });
+  for (let i = 0; i < tickets.length; i++) {
+    await prisma.ticket.upsert({
+      where: { type: tickets[i].type },
+      create: tickets[i],
+      update: tickets[i],
+    });
+  }
+
+  return await prisma.ticket.findMany({});
 }
 
 async function createEvent() {
