@@ -79,7 +79,6 @@ model Accomodation {
   type  String @id @unique @db.VarChar(255)
   price Int
   Order Order[]
-  Room Room[]
 }
 
 model Order {
@@ -93,34 +92,14 @@ model Order {
   accomodationType String
 }
 
-model HotelRoom {
-  id Int @id @default(autoincrement())
-  roomId Int @unique
-  Room Room @relation(fields: [roomId], references: [id])
-  hotelId Int @unique
-  Hotel Hotel @relation(fields: [hotelId], references: [id])
-}
-
 model Hotel {
   id Int @id @default(autoincrement())
   name String @unique
-  image String
-  HotelRoom HotelRoom[]
-  RoomUser RoomUser[]
+  roomTypes String @default("single")
+  availableBeds Int @default(0)
+  image String 
 }
 
-model Room {
-  id Int @id @default(autoincrement())
-  accomodationType String
-  Accomodation Accomodation @relation(fields: [accomodationType], references: [type])
-  RoomUser RoomUser[]
-  HotelRoom HotelRoom[]
-}
 
-model RoomUser {
-  id Int @id @default(autoincrement())
-  roomId Int @unique
-  Room Room @relation(fields: [roomId], references: [id])
-  hotelId Int @unique
-  Hotel Hotel @relation(fields: [hotelId], references: [id])
-}
+
+

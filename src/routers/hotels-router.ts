@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getDefaultEvent } from '@/controllers';
+import { getHotels } from '@/controllers';
 
 const hotelsRouter = Router();
 
-hotelsRouter.get('/', getDefaultEvent);
+hotelsRouter.get('/', getHotels);
 
 export { hotelsRouter };
