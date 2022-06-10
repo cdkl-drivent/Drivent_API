@@ -65,7 +65,7 @@ model Ticket {
 }
 
 model Accomodation {
-  type  String  @id @unique @db.VarChar(255)
+  type  String @id @unique @db.VarChar(255)
   price Int
   Order Order[]
 }
@@ -81,3 +81,15 @@ model Order {
   Accomodation     Accomodation @relation(fields: [accomodationType], references: [type])
   accomodationType String
 }
+
+model Hotel {
+  id Int @id @default(autoincrement())
+  name String @unique
+  roomTypes String @default("single")
+  availableBeds Int @default(0)
+  image String 
+}
+
+
+
+

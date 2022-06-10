@@ -1,14 +1,18 @@
-import { PrismaClient, Ticket, Accomodation } from '@prisma/client';
 import { createClient } from 'redis';
+import { PrismaClient, Ticket, Accomodation, Hotel } from '@prisma/client';
 import dayjs from 'dayjs';
 
 const prisma = new PrismaClient();
 const redis = createClient();
 
 async function main() {
+
   await redis.connect();
   await redis.select(JSON.parse(process.env.REDIS_DATABASE));
 
+  const hotels = await createHotels()
+  console.log({ hotels });
+  
   const event = await createEvent();
   console.log({ event });
 
@@ -17,6 +21,7 @@ async function main() {
 
   const accomodations = await createAccomodations();
   console.log({ accomodations });
+
 }
 
 main()
@@ -90,3 +95,38 @@ async function createEvent() {
 
   return event;
 }
+
+async function createHotels() {
+  const hotels: Hotel[] = [
+    {
+      id: 4,
+      name: 'Driven Resort+',
+      roomTypes: 'Single e Double',
+      availableBeds: 103,
+      image: 'https://cf.bstatic.com/xdata/images/hotel/max500/306975513.jpg?k=9c52d622e82d35ccaa4f8078009b98e707e0234e49b1be2c52704267b01ae14a&o=&hp=1'
+    },
+    {
+      id: 5,
+      name: 'Driven Palace II',
+      roomTypes: 'Single e Double',
+      availableBeds: 103,
+      image: 'https://pix10.agoda.net/hotelImages/338450/-1/83ae032f69728b5b19b86278fe934ec5.jpg?ca=9&ce=1&s=1024x768'
+    },
+    {
+      id: 6,
+      name: 'Driven World - Natal',
+      roomTypes: 'Single e Double',
+      availableBeds: 103,
+      image: 'https://pix10.agoda.net/hotelImages/154/154984/154984_16041514250041540113.jpg?ca=6&ce=1&s=1024x768'
+    },
+  ];
+
+  return await prisma.hotel.createMany({
+    data: hotels,
+  });
+}
+
+
+
+
+
