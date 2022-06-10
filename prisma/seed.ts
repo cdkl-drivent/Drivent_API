@@ -1,9 +1,15 @@
+import { createClient } from 'redis';
 import { PrismaClient, Ticket, Accomodation, Hotel } from '@prisma/client';
 import dayjs from 'dayjs';
 
 const prisma = new PrismaClient();
+const redis = createClient();
 
 async function main() {
+
+  await redis.connect();
+  await redis.select(JSON.parse(process.env.REDIS_DATABASE));
+
   const hotels = await createHotels()
   console.log({ hotels });
   
@@ -13,7 +19,7 @@ async function main() {
   const tickets = await createTickets();
   console.log({ tickets });
 
-  const accomodations = await createAccomodations()
+  const accomodations = await createAccomodations();
   console.log({ accomodations });
 
 }
@@ -25,6 +31,7 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await redis.disconnect();
   });
 
 async function createAccomodations() {
@@ -39,9 +46,15 @@ async function createAccomodations() {
     },
   ];
 
-  return await prisma.accomodation.createMany({
-    data: accomodations,
-  });
+  for (let i = 0; i < accomodations.length; i++) {
+    await prisma.accomodation.upsert({
+      where: { type: accomodations[i].type },
+      create: accomodations[i],
+      update: accomodations[i],
+    });
+  }
+
+  return await prisma.accomodation.findMany({});
 }
 
 async function createTickets() {
@@ -56,24 +69,30 @@ async function createTickets() {
     },
   ];
 
-  return await prisma.ticket.createMany({
-    data: tickets,
-  });
+  for (let i = 0; i < tickets.length; i++) {
+    await prisma.ticket.upsert({
+      where: { type: tickets[i].type },
+      create: tickets[i],
+      update: tickets[i],
+    });
+  }
+
+  return await prisma.ticket.findMany({});
 }
 
 async function createEvent() {
-  let event = await prisma.event.findFirst();
-  if (!event) {
-    event = await prisma.event.create({
-      data: {
-        title: 'Driven.t',
-        logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
-        backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
-        startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, 'days').toDate(),
-      },
-    });
-  }
+  await redis.hSet('event', {
+    title: 'Driven.t',
+    logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
+    backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
+    startsAt: JSON.stringify(dayjs()),
+    endsAt: JSON.stringify(dayjs().add(21, 'days').toDate()),
+    createdAt: JSON.stringify(dayjs().toDate()),
+    updatedAt: JSON.stringify(dayjs().toDate()),
+  });
+
+  const event = await redis.hGetAll('event');
+
   return event;
 }
 
@@ -104,23 +123,6 @@ async function createHotels() {
 
   return await prisma.hotel.createMany({
     data: hotels,
-  });
-}
-
-async function create() {
-  const tickets: Ticket[] = [
-    {
-      type: 'Presencial',
-      price: 25000,
-    },
-    {
-      type: 'Online',
-      price: 10000,
-    },
-  ];
-
-  return await prisma.ticket.createMany({
-    data: tickets,
   });
 }
 
