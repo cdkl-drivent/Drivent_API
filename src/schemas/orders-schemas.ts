@@ -3,7 +3,7 @@ import Joi from 'joi';
 
 type createOrder = Omit<orderParams, 'UserId'>;
 
-export const createOrderSchema = Joi.object<createOrder>({
+export const createOrderSchema = Joi.object({
   ticketType: Joi.string().required(),
   accomodationType: Joi.string().required(),
   price: Joi.number().required(),
