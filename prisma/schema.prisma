@@ -18,6 +18,7 @@ model User {
   updatedAt  DateTime     @updatedAt
   Session    Session[]
   Enrollment Enrollment[]
+  Order      Order[]
 }
 
 model Session {
@@ -27,17 +28,6 @@ model Session {
   token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Event {
-  id                 Int      @id @default(autoincrement())
-  title              String   @db.VarChar(255)
-  backgroundImageUrl String   @db.VarChar(255)
-  logoImageUrl       String   @db.VarChar(255)
-  startsAt           DateTime
-  endsAt             DateTime
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
 }
 
 model Enrollment {
@@ -67,3 +57,39 @@ model Address {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 }
+
+model Ticket {
+  type  String  @id @unique @db.VarChar(255)
+  price Int
+  Order Order[]
+}
+
+model Accomodation {
+  type  String @id @unique @db.VarChar(255)
+  price Int
+  Order Order[]
+}
+
+model Order {
+  id               Int          @id @default(autoincrement())
+  userId           Int          @unique
+  User             User         @relation(fields: [userId], references: [id])
+  ticketType       String       @db.VarChar(255)
+  Ticket           Ticket       @relation(fields: [ticketType], references: [type])
+  Payment          Boolean      @default(false)
+  price            Int          
+  Accomodation     Accomodation @relation(fields: [accomodationType], references: [type])
+  accomodationType String
+}
+
+model Hotel {
+  id Int @id @default(autoincrement())
+  name String @unique
+  roomTypes String @default("single")
+  availableBeds Int @default(0)
+  image String 
+}
+
+
+
+
